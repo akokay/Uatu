@@ -1,0 +1,24 @@
+{
+  "name": "uatu",
+  "version": "1.0.0",
+  "description": "Uatu is an analytics tool for the Minecraft marketplace",
+  "main": "test.js",
+  "dependencies": {
+    "typescript": "^4.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "make-run": "node src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akokay/Uatu.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akokay/Uatu/issues"
+  },
+  "homepage": "https://github.com/akokay/Uatu#readme"
+}
