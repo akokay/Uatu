@@ -2,16 +2,18 @@
   "name": "uatu",
   "version": "1.0.0",
   "description": "Uatu is an analytics tool for the Minecraft marketplace",
-  "main": "main.cjs",
+  "main": "main.js",
   "dependencies": {
     "got": "^11.8.2",
     "log-update": "^5.0.0",
+    "mysql": "^2.18.1",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.12"
   },
   "scripts": {
+    "start": "node dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

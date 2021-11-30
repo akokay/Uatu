@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 const fs = require("fs");
+var mysql = require("mysql");
 
 async function fetchURL(url: string, filename: String) {
   let response = await fetch(url, {
@@ -31,16 +32,16 @@ async function fetchURL(url: string, filename: String) {
       } else {
         console.log(`[fetchURL]: saved out/${filename}.json`);
         let i = 0;
+        //console.log(JSON.parse(JSON.stringify(body))[0]);
         while (true) {
           if (typeof JSON.parse(JSON.stringify(body))[i] == "undefined") {
-            i = 1000;
             break;
           }
-          console.log("yes\r");
+          i++;
           //console.log(JSON.parse(JSON.stringify(body))[i]);
           //console.log("\n---------------------------------------n" + i);
         }
-        console.log(`found ${i} skinpacks`);
+        console.log(`[FETCH] found ${i} skinpacks`);
         //console.log(JSON.parse(JSON.stringify(body)));
       }
     }
@@ -55,14 +56,38 @@ async function fetchURL(url: string, filename: String) {
   }
    */
 }
-console.log("TODO Data Analysis");
+console.log("start");
 let url =
   "https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=1000&skip=0&type=skinpack&locale=en-us";
 fetchURL(url, "skinpack");
 console.log("TODO END");
 console.log("noch mehr END");
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "marketplace",
+});
+/*
+con.connect(function (err: any) {
+  if (err) throw err;
+  console.log("Connected!");
+});*/
+
+con.connect(function (err: any) {
+  if (err) throw err;
+  con.query(
+    "SELECT * FROM product",
+    function (err: any, result: JSON, fields: any) {
+      if (err) throw err;
+      console.log(result);
+    }
+  );
+});
 /**
  * fetch alle links
  * fetch alle dateien
  * Datenbank!!!
  */
+process.exit(0);
