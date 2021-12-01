@@ -165,9 +165,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Panascais
-!.panascais.toml
 !pnpmfile.cjs
 !.eslintrc.js
 !.prettierrc.js
 !/test/.env
+
+
+out/
