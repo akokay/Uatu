@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 const fs = require("fs");
 
 export class RequestHandler {
-  public async fetchURL(url: string, filename: String): Promise<JSON> {
+  private async fetchURL(url: string): Promise<JSON> {
     let response = await fetch(url, {
       headers: {
         accept:
@@ -20,19 +20,56 @@ export class RequestHandler {
       },
       method: "GET",
     });
-    let body = await response.json();
-    console.log(`[fetchURL]: fetched ${url}`);
-    return body;
+    return await response.json();
+  }
+
+  public async fetchType(
+    object: Object,
+    type: "skinpack" | "mashup" | "resourcepack" | "worldtemplate",
+    limit: number = 1,
+    skip: number = 0
+  ): Promise<JSON> {
+    let amount: number = limit;
+    let count: number = 0;
+    let foundAll: boolean = false;
+
+    //TODO while loop
+    do {
+      let url: string = `https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=${limit}&skip=${skip}&type=${type}&locale=en-us`;
+      let body = await this.fetchURL(url);
+      //console.log(`[fetchURL]: fetched ${url}`);
+      //console.log( `[fetchURL]: fetched(type=${type},skip=${skip},limit=${limit}) ${url}` );
+      (object as any)[type] = [];
+      for (let i = skip; i < limit; i++) {
+        //console.log( typeof JSON.parse(JSON.stringify(body))[i] + " " + foundAll );
+        if (typeof JSON.parse(JSON.stringify(body))[i] == "undefined") {
+          foundAll = true;
+          count = i;
+          console.log(`[FETCHALL] found ${count} ${type}`);
+          break;
+        }
+        (object as any)[type].push(JSON.parse(JSON.stringify(body))[i]);
+      }
+      console.log(`[FETCH] found ${limit} ${type}`);
+      if (!foundAll) {
+        skip = limit;
+        limit += amount;
+      }
+    } while (!foundAll);
+    // fetch more products
+    //let body = await this.fetchURL(url);
+    return (object as any)[type];
     //TODO return JSON
+    /*
     fs.writeFile(
-      `out/${filename}.json`,
+      `out/${type}.json`,
       JSON.stringify(body),
       "utf8",
       (error: Error) => {
         if (error) {
           console.log(error);
         } else {
-          console.log(`[fetchURL]: saved out/${filename}.json`);
+          console.log(`[fetchURL]: saved out/${type}.json`);
           let i = 0;
           //console.log(JSON.parse(JSON.stringify(body))[0]);
           while (true) {
@@ -47,6 +84,6 @@ export class RequestHandler {
           //console.log(JSON.parse(JSON.stringify(body)));
         }
       }
-    );
+    );*/
   }
 }
