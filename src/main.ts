@@ -1,13 +1,12 @@
-import { RequestHandler } from "./backend/requestHandler";
-const fs = require("fs");
-var mysql = require("mysql");
+import { MarketplacetHandler } from "./backend/marketplace";
 
 console.log("start");
-let requesthandler = new RequestHandler();
-let url =
-  "https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=1000&skip=0&type=skinpack&locale=en-us";
-requesthandler.fetchURL(url, "skinpack");
-console.log("database");
+let marketplacetHandler = new MarketplacetHandler();
+marketplacetHandler.fetchAll();
+console.log("end");
+//process.exit(0);
+
+/*
 
 var con = mysql.createConnection({
   host: "localhost",
@@ -15,11 +14,6 @@ var con = mysql.createConnection({
   password: "root",
   database: "marketplace",
 });
-/*
-con.connect(function (err: any) {
-  if (err) throw err;
-  console.log("Connected!");
-});*/
 
 con.connect(function (err: any) {
   if (err) throw err;
@@ -31,9 +25,4 @@ con.connect(function (err: any) {
     }
   );
 });
-/**
- * fetch alle links
- * fetch alle dateien
- * Datenbank!!!
- */
-//process.exit(0);
+*/

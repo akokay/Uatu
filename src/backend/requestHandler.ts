@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 const fs = require("fs");
 
 export class RequestHandler {
-  public async fetchURL(url: string, filename: String): Promise<void> {
+  public async fetchURL(url: string, filename: String): Promise<JSON> {
     let response = await fetch(url, {
       headers: {
         accept:
@@ -22,6 +22,7 @@ export class RequestHandler {
     });
     let body = await response.json();
     console.log(`[fetchURL]: fetched ${url}`);
+    return body;
     //TODO return JSON
     fs.writeFile(
       `out/${filename}.json`,
