@@ -1,3 +1,4 @@
+import { MarketplaceData } from "./marketplaceProduct";
 import fetch from "node-fetch";
 const fs = require("fs");
 
@@ -32,16 +33,14 @@ export class RequestHandler {
     let amount: number = limit;
     let count: number = 0;
     let foundAll: boolean = false;
-
+    console.log(`[FETCH]${amount}: ${type}`);
     //TODO while loop
+    (object as any)[type] = [];
     do {
       let url: string = `https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=${limit}&skip=${skip}&type=${type}&locale=en-us`;
       let body = await this.fetchURL(url);
-      //console.log(`[fetchURL]: fetched ${url}`);
-      //console.log( `[fetchURL]: fetched(type=${type},skip=${skip},limit=${limit}) ${url}` );
-      (object as any)[type] = [];
       for (let i = skip; i < limit; i++) {
-        //console.log( typeof JSON.parse(JSON.stringify(body))[i] + " " + foundAll );
+        //console.log(JSON.parse(JSON.stringify(body))[i] + " " + foundAll);
         if (typeof JSON.parse(JSON.stringify(body))[i] == "undefined") {
           foundAll = true;
           count = i;
@@ -49,8 +48,8 @@ export class RequestHandler {
           break;
         }
         (object as any)[type].push(JSON.parse(JSON.stringify(body))[i]);
+        //console.log((object as any)[type][i].Title);
       }
-      console.log(`[FETCH] found ${limit} ${type}`);
       if (!foundAll) {
         skip = limit;
         limit += amount;
