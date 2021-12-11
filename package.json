@@ -6,6 +6,7 @@
   "dependencies": {
     "got": "^11.8.2",
     "log-update": "^5.0.0",
+    "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.6"
   },

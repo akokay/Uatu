@@ -1,9 +1,11 @@
 import { MarketplacetHandler } from "./backend/marketplace";
+const moment = require("moment");
 
-console.log("start");
+//let date = moment(moment(new Date())).format("DD-MMM-YYYY");
+console.log(`start`);
 let marketplacetHandler = new MarketplacetHandler();
 marketplacetHandler.fetchAll();
-console.log("end");
+console.log(`end`);
 //process.exit(0);
 
 /*
@@ -17,7 +19,8 @@ var con = mysql.createConnection({
 
 con.connect(function (err: any) {
   if (err) throw err;
-  con.query(
+  con.query(tsc
+  tsc
     "SELECT * FROM product",
     function (err: any, result: JSON, fields: any) {
       if (err) throw err;

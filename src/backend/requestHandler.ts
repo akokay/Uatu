@@ -26,31 +26,31 @@ export class RequestHandler {
 
   public async fetchType(
     object: Object,
-    type: "skinpack" | "mashup" | "resourcepack" | "worldtemplate",
+    type: "skinpack" | "mashup" | "resourcepack" | "worldtemplate" | "bundle",
     limit: number = 1,
     skip: number = 0
   ): Promise<JSON> {
     let amount: number = limit;
     let count: number = 0;
     let foundAll: boolean = false;
-    console.log(`[FETCH]${amount}: ${type}`);
-    //TODO while loop
-    (object as any)[type] = [];
+    //console.log(`[FETCH]${amount}: ${type}`);
+    (object as any)[type] = { lastfetched: new Date().toString(), content: [] };
     do {
       let url: string = `https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=${limit}&skip=${skip}&type=${type}&locale=en-us`;
       let body = await this.fetchURL(url);
-      for (let i = skip; i < limit; i++) {
+      for (let i = 0; i < limit - skip; i++) {
         //console.log(JSON.parse(JSON.stringify(body))[i] + " " + foundAll);
-        if (typeof JSON.parse(JSON.stringify(body))[i] == "undefined") {
+        if (JSON.parse(JSON.stringify(body))[i] == undefined) {
           foundAll = true;
-          count = i;
+          count += i;
           console.log(`[FETCHALL] found ${count} ${type}`);
           break;
         }
-        (object as any)[type].push(JSON.parse(JSON.stringify(body))[i]);
+        (object as any)[type].content.push(JSON.parse(JSON.stringify(body))[i]);
         //console.log((object as any)[type][i].Title);
       }
       if (!foundAll) {
+        count += limit;
         skip = limit;
         limit += amount;
       }

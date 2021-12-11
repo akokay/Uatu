@@ -11,6 +11,7 @@ express@4.17.1
 node-html-parser@5.1.0
 '''
 npm install node-fetch@2
+npm install moment --save # format date
 
 '''
 
