@@ -1,31 +1,40 @@
 import { MarketplacetHandler } from "./backend/marketplace";
 const moment = require("moment");
+import * as readline from "readline";
 
 //let date = moment(moment(new Date())).format("DD-MMM-YYYY");
+let newFetch: boolean = false;
+
 console.log(`start`);
 let marketplacetHandler = new MarketplacetHandler();
-marketplacetHandler.fetchAll();
+if (newFetch) {
+  marketplacetHandler.fetchAll();
+} else {
+  marketplacetHandler.loadAll();
+}
 console.log(`end`);
-//process.exit(0);
 
-/*
-
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "marketplace",
+/* let rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
 });
 
-con.connect(function (err: any) {
-  if (err) throw err;
-  con.query(tsc
-  tsc
-    "SELECT * FROM product",
-    function (err: any, result: JSON, fields: any) {
-      if (err) throw err;
-      console.log(result);
-    }
-  );
-});
-*/
+rl.question("Is this example useful? [y/n] ", (answer) => {
+  console.log(`Invalid answer! ${answer.toLocaleLowerCase()}`);
+  rl.close();
+}); */
+
+/**
+ * options:
+ *  fetch new Data - bool
+ *  search for product | team
+ *  name of product or team
+ *
+ * competition of team = competition of last 5 products
+ *
+ * competition of product
+ *  loop through same productype[] -> array
+ *
+ *
+ *
+ */

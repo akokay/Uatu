@@ -6,8 +6,7 @@ export class RequestHandler {
   private async fetchURL(url: string): Promise<JSON> {
     let response = await fetch(url, {
       headers: {
-        accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "accept-language": "de-DE,de;q=0.9",
         "cache-control": "max-age=0",
         "sec-fetch-dest": "document",
@@ -24,12 +23,7 @@ export class RequestHandler {
     return await response.json();
   }
 
-  public async fetchType(
-    object: Object,
-    type: "skinpack" | "mashup" | "resourcepack" | "worldtemplate" | "bundle",
-    limit: number = 1,
-    skip: number = 0
-  ): Promise<JSON> {
+  public async fetchType(object: Object, type: "skinpack" | "mashup" | "resourcepack" | "worldtemplate" | "bundle", limit: number = 1, skip: number = 0): Promise<JSON> {
     let amount: number = limit;
     let count: number = 0;
     let foundAll: boolean = false;
@@ -37,6 +31,7 @@ export class RequestHandler {
     (object as any)[type] = { lastfetched: new Date().toString(), content: [] };
     do {
       let url: string = `https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=${limit}&skip=${skip}&type=${type}&locale=en-us`;
+      console.log(`wait for \"https://www.minecraft.net/bin/minecraft/productmanagement.productsinfobytype.json?limit=${limit}&skip=${skip}&type=${type}&locale=en-us\"`);
       let body = await this.fetchURL(url);
       for (let i = 0; i < limit - skip; i++) {
         //console.log(JSON.parse(JSON.stringify(body))[i] + " " + foundAll);
