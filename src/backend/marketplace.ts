@@ -45,8 +45,9 @@ export class MarketplacetHandler {
     });
   }
 
-  public loadAll() {
+  public async loadAll(): Promise<object> {
     this.object = JSON.parse(fs.readFileSync(`${this.outpath}Catalog.json`, "utf8"));
-    console.log(`loaded Catalog`);
+    console.log(`loaded Catalog from file`);
+    return this.object;
   }
 }
