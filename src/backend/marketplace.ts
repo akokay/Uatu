@@ -50,4 +50,34 @@ export class MarketplacetHandler {
     console.log(`loaded Catalog from file`);
     return this.object;
   }
+
+  //public getProduct(name: string, type: string);
+
+  public getTeam(name: string, type: string) {
+    let info = [];
+    let i = 0;
+    console.log(`search for ${name}`);
+    while (true) {
+      // count product
+      if ((this.object as any)[type].content[i] == undefined) break;
+      if ((this.object as any)[type].content[i].DisplayProperties.creatorName.toLowerCase() == name.toLowerCase()) {
+        info.push((this.object as any)[type].content[i]);
+        console.log((this.object as any)[type].content[i].Title);
+      }
+      i++;
+    }
+    console.log(`end search for ${name}`);
+    return info;
+  }
+
+  /**
+   *
+   * @param object
+   * get Product and compare tags with others
+   * if atleast 1|2|3 tag are the same -> remember product
+   * return percent of coverage of the found product - similarity count
+   */
+  //public getProductCompetition();
+
+  //public getTeamCompetition();
 }

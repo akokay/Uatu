@@ -15,10 +15,21 @@ export async function Startup(): Promise<void> {
 
   let rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-  rl.question("search ", (answer) => {
-    // TODO: Log the answer in a database
-    console.log(`result ${answer}`);
+  let validProduct = false;
+  let validTeam = false;
+  let productType = "worldtemplate";
+  let teamname = "Panascais";
+  let productname = "";
+  marketplacetHandler.getTeam(teamname, productType);
+  //TODO chek if product or Team is valid
 
-    rl.close();
-  });
+  /**
+   * loop through all products
+   *
+   *  remove all product
+   *    team is the same
+   *    if no tag is in common
+   *
+   */
+  process.exit();
 }

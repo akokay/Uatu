@@ -1,4 +1,4 @@
-import { Startup } from "./asyncCall";
+import { Startup } from "./startup";
 
 //let date = moment(moment(new Date())).format("DD-MMM-YYYY");
 Startup();
