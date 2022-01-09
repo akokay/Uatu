@@ -51,7 +51,21 @@ export class MarketplacetHandler {
     return this.object;
   }
 
-  //public getProduct(name: string, type: string);
+  public getProduct(name: string, type: string) {
+    let i = 0;
+    console.log(`search for ${name}`);
+    while (true) {
+      // count product
+      if ((this.object as any)[type].content[i] == undefined) break;
+      if ((this.object as any)[type].content[i].Title.neutral.toLowerCase() == name.toLowerCase()) {
+        console.log((this.object as any)[type].content[i].Title);
+        return (this.object as any)[type].content[i];
+      }
+      i++;
+    }
+    console.log(`end search for ${name}`);
+    return {};
+  }
 
   public getTeam(name: string, type: string) {
     let info = [];

@@ -19,8 +19,9 @@ export async function Startup(): Promise<void> {
   let validTeam = false;
   let productType = "worldtemplate";
   let teamname = "Panascais";
-  let productname = "";
+  let productname = "Trained Pets";
   marketplacetHandler.getTeam(teamname, productType);
+  marketplacetHandler.getProduct(productname, productType);
   //TODO chek if product or Team is valid
 
   /**
