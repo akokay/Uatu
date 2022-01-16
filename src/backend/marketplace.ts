@@ -4,7 +4,7 @@ const fs = require("fs");
 
 export class MarketplacetHandler {
   private requesthandler: RequestHandler = new RequestHandler();
-  public object = {}; //MarketplaceData
+  public object: any = {}; //MarketplaceData
   private outpath = "out/";
 
   public async fetchAll(): Promise<void> {
@@ -91,7 +91,96 @@ export class MarketplacetHandler {
    * if atleast 1|2|3 tag are the same -> remember product
    * return percent of coverage of the found product - similarity count
    */
-  //public getProductCompetition();
+  public getProductCompetition(product: any, teamname: string, type: string) {
+    //get tags
+    /* let tags = (product as any).Tags;
+    tags = tags.splice(1, tags.length - 2);
+    for (let i = 0; (product as any).DisplayProperties.packIdentity[i] != undefined; i++) {
+      console.log(`${i}`);
+      tags = tags.splice(1);
+    }
+    console.log(`teag: ${tags}`);
+    console.log(`teag: ${tags}`);
+    //get genre
+    let genre = "";
+    for (let i = 0; i < tags.length; i++) {
+      if (tags[i].startsWith("genre.", 0)) {
+        genre = tags[i].slice(6);
+        break;
+      }
+    }
+    if (genre == "") {
+      console.log(`no genre found`);
+      return null;
+    } */
+
+    console.log(`---------------------------`);
+    this.setInfo(product);
+    //get all products with the same genre
+    //filter by genre
+
+    console.log(`---------------------------`);
+    let competition = [{ test: 2 }, { test: 5 }, { test: 2222 }];
+    //console.log(competition);
+    this.filter(this.object[type].content, type, product.DisplayProperties.creatorName);
+    //console.log(competition);
+  }
+
+  private filter(arr: any, type: string, teamname: string) {
+    let i = 0;
+    let res = [];
+    while (true) {
+      if (arr[i] == undefined) break;
+      if (arr[i].DisplayProperties.creatorName != teamname) {
+        res.push(arr[i]);
+      } else {
+        //console.log(arr[i].Title.neutral);
+      }
+      //if ((arr as any)[type].content[i] == undefined) break;
+      i++;
+    }
+    return res;
+  }
+
+  private setInfo(product: any) {
+    let info = product.Tags;
+    info = info.splice(1, info.length - 1);
+    for (let i = 0; (product as any).DisplayProperties.packIdentity[i] != undefined; i++) {
+      console.log(`${i}`);
+      info = info.splice(1);
+    }
+    console.log(`teag: ${info}`);
+    //get genre
+    let genre = "";
+    let subgenre = "";
+    let tags = [];
+    let bools = [];
+    let P = 0;
+
+    console.log(`search`);
+    for (let i = 0; i < info.length; i++) {
+      if (info[i].startsWith("genre.", 0)) {
+        genre = info[i].slice(6);
+      } else if (info[i].startsWith("subgenre.", 0)) {
+        subgenre = info[i].slice(9);
+      } else if (info[i].startsWith("tag.", 0)) {
+        tags.push(info[i].slice(4));
+      } else if (info[i].endsWith("P") && info[i].length == 2) {
+        console.log(`P sdsd  ${info[i].length} ${info[i].slice(-1)}`);
+        P = Number(info[i].slice(0, 1));
+      } else {
+        bools.push(info[i]);
+      }
+    }
+    console.log(`search`);
+    if (genre == "") {
+      console.log(`no genre found`);
+      return null;
+    }
+    info = { tags: tags, genre: genre, subgenre: subgenre, bools: bools, P: P };
+    console.log(info);
+    return info;
+  }
 
   //public getTeamCompetition();
 }
