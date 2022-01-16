@@ -106,12 +106,10 @@ export class MarketplacetHandler {
     while (true) {
       if (arr[i] == undefined) break;
       arr[i].info = this.setInfo(arr[i]);
-      if (arr[i].DisplayProperties.creatorName != filter.DisplayProperties.creatorName && arr[i].info.genre == filter.info.genre) {
+      if (arr[i].DisplayProperties.creatorName != filter.DisplayProperties.creatorName && arr[i].info.genre == filter.info.genre && (filter.info.subgenre == "" || arr[i].info.subgenre == filter.info.subgenre)) {
         res.push(arr[i]);
         count++;
         console.log(`found ${arr[i].Title.neutral} ${count}`);
-      } else {
-        console.log(`found ${arr[i].Title.neutral} ${arr[i].info.genre}`);
       }
       i++;
       //if ((arr as any)[type].content[i] == undefined) break;
