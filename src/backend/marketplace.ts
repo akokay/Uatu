@@ -37,7 +37,7 @@ export class MarketplacetHandler {
       i++;
     }
     console.log(`[END] found ${i} ${Producttype}`);
-
+    //TODO test if 'writeFileSync' is necessary
     fs.writeFile(`${this.outpath}Catalog.json`, JSON.stringify(this.object), function (err: any) {
       if (err) {
         console.log(err);
@@ -93,9 +93,22 @@ export class MarketplacetHandler {
    */
   public getProductCompetition(product: any, teamname: string, type: string) {
     console.log(`---------------------------`);
-    product.info = this.setInfo(product);
     //console.log(competition);
-    this.filter(this.object[type].content, type, product);
+
+    product.info = this.setInfo(product);
+    //console.log(product);
+    let res = this.filter(this.object[type].content, type, product);
+    //console.log(JSON.stringify(res));
+    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
+    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_info.json`, JSON.stringify(product), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
     //console.log(competition);
   }
 
@@ -103,28 +116,58 @@ export class MarketplacetHandler {
     let i = 0;
     let count = 0;
     let res = [];
+    let tagMatches = [];
+    let tagStats = {};
+    for (let index = 0; index < filter.info.tags.length; index++) {
+      console.log(filter.info.tags[index]);
+      (tagStats as any)[filter.info.tags[index]] = 0;
+    }
+    console.log(tagStats);
     while (true) {
       if (arr[i] == undefined) break;
       arr[i].info = this.setInfo(arr[i]);
       if (arr[i].DisplayProperties.creatorName != filter.DisplayProperties.creatorName && arr[i].info.genre == filter.info.genre && (filter.info.subgenre == "" || arr[i].info.subgenre == filter.info.subgenre)) {
-        res.push(arr[i]);
-        count++;
-        console.log(`found ${arr[i].Title.neutral} ${count}`);
+        tagMatches = this.getTagmatches(filter.info.tags, arr[i].info.tags);
+        if (tagMatches.length >= 1) {
+          for (let index = 0; index < tagMatches.length; index++) {
+            (tagStats as any)[tagMatches[index]]++;
+          }
+          res.push(arr[i]);
+          count++;
+          console.log(`found ${arr[i].Title.neutral}-${arr[i].DisplayProperties.creatorName} ${count} ${tagMatches.length} ${tagMatches}`);
+        }
       }
       i++;
       //if ((arr as any)[type].content[i] == undefined) break;
     }
+    //sort by tag(tagquantity),
     console.log(`filter products from ${i} to ${count} products`);
+    console.log(tagStats);
     return res;
   }
 
+  private getTagmatches(tag: string[], tag2: string[]) {
+    let matches = [];
+    for (let i = 0; i < tag.length; i++) {
+      for (let j = 0; j < tag2.length; j++) {
+        if (tag[i] == tag2[j]) {
+          matches.push(tag[i]);
+        }
+      }
+    }
+    return matches;
+  }
+
   private setInfo(product: any) {
-    let info = product.Tags;
+    let info = [];
+    for (let i = 0; i < product.Tags.length; i++) {
+      info.push(product.Tags[i]);
+    }
     info = info.splice(1, info.length - 1);
     for (let i = 0; (product as any).DisplayProperties.packIdentity[i] != undefined; i++) {
       info = info.splice(1);
     }
-    //get genre
+    //get genre,subgenre,tags
     let genre = "";
     let subgenre = "";
     let tags = [];
