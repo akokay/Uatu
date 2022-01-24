@@ -8,7 +8,7 @@
     "log-update": "^5.0.0",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
-    "node-fetch": "^2.6.6"
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@types/node": "^16.11.12",
