@@ -156,17 +156,21 @@ export class MarketplacetHandler {
   }
   
   private sortOutput(arr: any, type: string, filter: any) {
-    let res={};
+    let teams={};
+    let res=[];
     for (let index = 0; index < arr.length; index++) {
-      console.log(arr[index].DisplayProperties.creatorName);
-      if((res as any)[arr[index].DisplayProperties.creatorName]==undefined){
-        (res as any)[arr[index].DisplayProperties.creatorName]={count:0,products:[]}
+      //console.log(arr[index].DisplayProperties.creatorName);
+      if((teams as any)[arr[index].DisplayProperties.creatorName]==undefined){
+        (teams as any)[arr[index].DisplayProperties.creatorName]={count:0,products:[]}
       }
-      (res as any)[arr[index].DisplayProperties.creatorName].count++;
-      (res as any)[arr[index].DisplayProperties.creatorName]["products"].push(arr[index]);
-      //console.log((res as any)[arr[index].DisplayProperties.creatorName]);
+      (teams as any)[arr[index].DisplayProperties.creatorName].count++;
+      (teams as any)[arr[index].DisplayProperties.creatorName]["products"].push(arr[index]);
+      //console.log((teams as any)[arr[index].DisplayProperties.creatorName]);
     }
-    return res;
+    for(var propt in teams){
+      console.log(`${propt}: ${(teams as any)[propt]}`);
+    }
+    return teams;
   }
 
   private getTagmatches(tag: string[], tag2: string[]) {
