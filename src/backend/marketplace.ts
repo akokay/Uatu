@@ -6,6 +6,7 @@ export class MarketplacetHandler {
   private requesthandler: RequestHandler = new RequestHandler();
   public object: any = {}; //MarketplaceData
   private outpath = "out/";
+  private inpath = "in/";
 
   public async fetchAll(): Promise<void> {
     let Producttype: string = "mashup";
@@ -38,7 +39,7 @@ export class MarketplacetHandler {
     }
     console.log(`[END] found ${i} ${Producttype}`);
     //TODO test if 'writeFileSync' is necessary
-    fs.writeFile(`${this.outpath}Catalog.json`, JSON.stringify(this.object), function (err: any) {
+    fs.writeFile(`${this.inpath}Catalog.json`, JSON.stringify(this.object), function (err: any) {
       if (err) {
         console.log(err);
       }
@@ -46,7 +47,7 @@ export class MarketplacetHandler {
   }
 
   public async loadAll(): Promise<object> {
-    this.object = JSON.parse(fs.readFileSync(`${this.outpath}Catalog.json`, "utf8"));
+    this.object = JSON.parse(fs.readFileSync(`${this.inpath}Catalog.json`, "utf8"));
     console.log(`loaded Catalog from file`);
     return this.object;
   }
@@ -86,10 +87,11 @@ export class MarketplacetHandler {
 
   /**
    *
-   * @param object
-   * get Product and compare tags with others
-   * if atleast 1|2|3 tag are the same -> remember product
-   * return percent of coverage of the found product - similarity count
+   * @param Object
+   * 
+   * 
+   * sort by team, popularity
+   * count matches per team
    */
   public getProductCompetition(product: any, teamname: string, type: string) {
     console.log(`---------------------------`);
@@ -97,9 +99,16 @@ export class MarketplacetHandler {
 
     product.info = this.setInfo(product);
     //console.log(product);
-    let res = this.filter(this.object[type].content, type, product);
+    let res = this.filterSimilarity(this.object[type].content, type, product);
+
+    let teams = this.sortOutput(res, type, product);
     //console.log(JSON.stringify(res));
     fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
+    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_team_overview.json`, JSON.stringify(teams), function (err: any) {
       if (err) {
         console.log(err);
       }
@@ -112,7 +121,7 @@ export class MarketplacetHandler {
     //console.log(competition);
   }
 
-  private filter(arr: any, type: string, filter: any) {
+  private filterSimilarity(arr: any, type: string, filter: any) {
     let i = 0;
     let count = 0;
     let res = [];
@@ -143,6 +152,20 @@ export class MarketplacetHandler {
     //sort by tag(tagquantity),
     console.log(`filter products from ${i} to ${count} products`);
     console.log(tagStats);
+    return res;
+  }
+  
+  private sortOutput(arr: any, type: string, filter: any) {
+    let res={};
+    for (let index = 0; index < arr.length; index++) {
+      console.log(arr[index].DisplayProperties.creatorName);
+      if((res as any)[arr[index].DisplayProperties.creatorName]==undefined){
+        (res as any)[arr[index].DisplayProperties.creatorName]={count:0,products:[]}
+      }
+      (res as any)[arr[index].DisplayProperties.creatorName].count++;
+      (res as any)[arr[index].DisplayProperties.creatorName]["products"].push(arr[index]);
+      //console.log((res as any)[arr[index].DisplayProperties.creatorName]);
+    }
     return res;
   }
 

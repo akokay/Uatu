@@ -50,34 +50,7 @@ export class RequestHandler {
         limit += amount;
       }
     } while (!foundAll);
-    // fetch more products
-    //let body = await this.fetchURL(url);
+    // TODO fetch more products
     return (object as any)[type];
-    //TODO return JSON
-    /*
-    fs.writeFile(
-      `out/${type}.json`,
-      JSON.stringify(body),
-      "utf8",
-      (error: Error) => {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log(`[fetchURL]: saved out/${type}.json`);
-          let i = 0;
-          //console.log(JSON.parse(JSON.stringify(body))[0]);
-          while (true) {
-            if (typeof JSON.parse(JSON.stringify(body))[i] == "undefined") {
-              break;
-            }
-            i++;
-            //console.log(JSON.parse(JSON.stringify(body))[i]);
-            //console.log("\n---------------------------------------n" + i);
-          }
-          console.log(`[FETCH] found ${i} skinpacks`);
-          //console.log(JSON.parse(JSON.stringify(body)));
-        }
-      }
-    );*/
   }
 }
