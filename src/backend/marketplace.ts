@@ -7,6 +7,7 @@ export class MarketplacetHandler {
   public object: any = {}; //MarketplaceData
   private outpath = "out/";
   private inpath = "in/";
+  private conversion = 0.00576819973603;
 
   public async fetchAll(): Promise<void> {
     let Producttype: string = "mashup";
@@ -200,6 +201,7 @@ export class MarketplacetHandler {
     let tags = [];
     let bools = [];
     let P = 0;
+    let income = Number(((product.TotalRatingsCount) * product.DisplayProperties.price).toFixed());
     for (let i = 0; i < info.length; i++) {
       if (info[i].startsWith("genre.", 0)) {
         genre = info[i].slice(6);
@@ -213,7 +215,29 @@ export class MarketplacetHandler {
         bools.push(info[i]);
       }
     }
-    return { tags: tags, genre: genre, subgenre: subgenre, bools: bools, P: P };
+    return { tags: tags, genre: genre, subgenre: subgenre, bools: bools, P: P, popularity: Number((product.TotalRatingsCount * product.AverageRating).toFixed()), income: income, priceEUR:this.priceConversion(income)};
+  }
+  
+  private priceConversion(coins:number){
+    /*
+    320 coins - 1.99
+      1 coins - 0,00621875
+    1020 coins - 5.99
+      1 coins - 0,0058725490196078
+    1720 coins - 9.99
+      1 coins - 0,0058081395348837
+    3500 coins - 19.99
+      1 coins - 0,0057114285714286
+    8800 coins - 49.99
+      1 coins - 0,0056806818181818
+    
+    avg
+      1 - 0.00576819973603
+    
+    0,0058725490196078+ 0,0058081395348837+ 0,0057114285714286+ 0,0056806818181818 = 0.0230727989441 
+    0.0230727989441/4 = 0.00576819973603
+     */
+    return coins * this.conversion;
   }
 
   //public getTeamCompetition();
