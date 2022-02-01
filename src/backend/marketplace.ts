@@ -119,6 +119,7 @@ export class MarketplacetHandler {
         console.log(err);
       }
     });
+    this.createOutput(product,teams);
     //console.log(competition);
   }
 
@@ -189,6 +190,23 @@ export class MarketplacetHandler {
     }
     return matches;
   }
+  private createOutput(product:any,teams:object[]) { 
+    let text=
+    `# Competition based on ${product.Title.neutral}\n`+
+    `![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n`+
+    `AverageRating: ${product.AverageRating}\n\n`+
+    `TotalRatingsCount: ${product.TotalRatingsCount}\n\n`+
+    `Genre: ${product.info.genre}\n\n`+
+    `${product.info.subgenre!=""?`Subenre: ${product.info.subgenre}\n\n`:""}`+
+    `Tags: ${product.info.tags}\n\n`+
+    `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)`;
+    
+    fs.writeFileSync(`${product.Title.neutral.split(" ").join("_")}_competition.md`, text, function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
 
   private setInfo(product: any) {
     let info = [];
@@ -219,7 +237,7 @@ export class MarketplacetHandler {
         bools.push(info[i]);
       }
     }
-    return { tags: tags, genre: genre, subgenre: subgenre, bools: bools, P: P, popularity: Number((product.TotalRatingsCount * product.AverageRating).toFixed()), income: income, priceEUR:this.priceConversion(income)};
+    return { tags: tags, genre: genre, subgenre: subgenre, bools: bools, P: P, popularity: Number((product.TotalRatingsCount * product.AverageRating).toFixed()), income: income, priceEUR:this.priceConversion(product.DisplayProperties.price)};
   }
   
   private priceConversion(coins:number){
