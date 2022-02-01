@@ -159,6 +159,8 @@ export class MarketplacetHandler {
   private sortOutput(arr: any, type: string, filter: any) {
     let teams={};
     let res=[];
+    let highest=""
+    let match=-1;
     for (let index = 0; index < arr.length; index++) {
       //console.log(arr[index].DisplayProperties.creatorName);
       if((teams as any)[arr[index].DisplayProperties.creatorName]==undefined){
@@ -169,9 +171,11 @@ export class MarketplacetHandler {
       //console.log((teams as any)[arr[index].DisplayProperties.creatorName]);
     }
     for(var propt in teams){
-      console.log(`${propt}: ${(teams as any)[propt]}`);
+      let obj = {creatorName:propt,count: (teams as any)[propt].count,products:(teams as any)[propt].products};
+      res.push(obj);
+       //console.log(`${propt}: ${(teams as any)[propt].count}`);
     }
-    return teams;
+    return res.sort((a, b) => 0 - ((a as any).count > (b as any).count ? 1 : -1));
   }
 
   private getTagmatches(tag: string[], tag2: string[]) {
