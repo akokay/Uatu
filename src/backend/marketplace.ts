@@ -192,20 +192,55 @@ export class MarketplacetHandler {
   }
   private createOutput(product:any,teams:object[]) { 
     let text=
-    `# Competition based on ${product.Title.neutral}\n`+
-    `![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n`+
-    `AverageRating: ${product.AverageRating}\n\n`+
-    `TotalRatingsCount: ${product.TotalRatingsCount}\n\n`+
-    `Genre: ${product.info.genre}\n\n`+
-    `${product.info.subgenre!=""?`Subenre: ${product.info.subgenre}\n\n`:""}`+
-    `Tags: ${product.info.tags}\n\n`+
-    `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)`;
+    `# Competition based on ${product.Title.neutral}\n# `+ this.product_overview(product);
+    for (let i = 0; i < teams.length; i++) {
+      text+=`\n\n\n\n${this.team_overview(teams[i])}`;
+      
+    }
+    //TODO competion output
+    // TODO module for team outpur and product info
     
     fs.writeFileSync(`${product.Title.neutral.split(" ").join("_")}_competition.md`, text, function (err: any) {
       if (err) {
         console.log(err);
       }
     });
+  }
+
+  private product_overview(product:any){
+    return `${product.Title.neutral}\n\n`+`![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n`+
+    `AverageRating: ${product.AverageRating}\n\n`+
+    `TotalRatingsCount: ${product.TotalRatingsCount}\n\n`+
+    `Genre: ${product.info.genre}\n\n`+
+    `${product.info.subgenre!=""?`Subenre: ${product.info.subgenre}\n\n`:""}`+
+    `Tags: ${product.info.tags}\n\n`+
+    `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)`;
+  }
+
+  private team_overview(team:any){
+    /**
+     * matched tags, popularity, top tags of that team, top 3 products
+     * TODO get team image
+     */
+    let matchedTags ={}
+    let popularity =0;
+    for(let i=0;i<team.products.length; i++){
+      for(let j=0;j<team.products[i].info.tags.length;j++){
+        if((matchedTags as any)[team.products[i].info.tags[j]]==undefined){
+          (matchedTags as any)[team.products[i].info.tags[j]]=0;
+        }
+        (matchedTags as any)[team.products[i].info.tags[j]]++;
+      }
+      popularity+=team.products[i].info.popularity;
+        //console.log(team.products[i].info.tags);
+    }
+    //TODO sort matchedTags
+    let top = "";
+    for(let i=0;i<(3&&team.products.length);i++){
+      //console.log(team.products[i]);
+      top+= `### ${this.product_overview(team.products[i])}\n`;
+    }
+    return `## ${team.creatorName}\n\n`+`popularity: ${popularity}\n\n`+`${JSON.stringify(matchedTags)+ top}`;
   }
 
   private setInfo(product: any) {
