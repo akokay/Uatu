@@ -95,7 +95,6 @@ export class MarketplacetHandler {
    * count matches per team
    */
   public getProductCompetition(product: any, teamname: string, type: string) {
-    console.log(`---------------------------`);
     //console.log(competition);
 
     product.info = this.setInfo(product);
@@ -135,7 +134,7 @@ export class MarketplacetHandler {
     let tagMatches = [];
     let tagStats = {};
     for (let index = 0; index < filter.info.tags.length; index++) {
-      console.log(filter.info.tags[index]);
+      //console.log(filter.info.tags[index]);
       (tagStats as any)[filter.info.tags[index]] = 0;
     }
     //console.log(tagStats);
@@ -150,7 +149,7 @@ export class MarketplacetHandler {
           }
           res.push(arr[i]);
           count++;
-          console.log(`found ${arr[i].Title.neutral}-${arr[i].DisplayProperties.creatorName} ${count} ${tagMatches.length} ${tagMatches}`);
+          //console.log(`found ${arr[i].Title.neutral}-${arr[i].DisplayProperties.creatorName} ${count} ${tagMatches.length} ${tagMatches}`);
         }
       }
       i++;
@@ -158,7 +157,7 @@ export class MarketplacetHandler {
     }
     //sort by tag(tagquantity),
     console.log(`filter products from ${i} to ${count} products`);
-    console.log(tagStats);
+    //console.log(tagStats);
     return [res,tagStats];
   }
   
