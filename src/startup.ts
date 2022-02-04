@@ -21,7 +21,7 @@ export async function Startup(): Promise<void> {
   let teamname = "Panascais";
   let productname = "Trained Pets";
   let team = marketplacetHandler.getTeam(teamname, productType);
-  marketplacetHandler.getProduct(productname, productType);
+  //marketplacetHandler.getProduct(productname, productType);
   //console.log(team[0]);
   //TODO chek if product or Team is valid
 
@@ -33,6 +33,7 @@ export async function Startup(): Promise<void> {
    *    if no tag is in common
    *
    */
-  marketplacetHandler.getProductCompetition(team[0], teamname, productType);
+  //marketplacetHandler.getProductCompetition(team[0], productType);
+  marketplacetHandler.getTeamCompetition(team,productType);
   process.exit();
 }

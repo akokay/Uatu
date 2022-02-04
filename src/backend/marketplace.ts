@@ -85,16 +85,23 @@ export class MarketplacetHandler {
     console.log(`end search for ${name}`);
     return info;
   }
+  public getTeamCompetition(team:any,type:string){
+    let comps = {};
+    for(let i=0;i<team.length;i++){
+      (comps as any)[team[i].Title.neutral] = this.getProductCompetition(team[i],type,false);
+    }
+    /**
+     * merge
+     * 
+     */
+    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.json`, JSON.stringify(comps), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
 
-  /**
-   *
-   * @param Object
-   * 
-   * 
-   * sort by team, popularity
-   * count matches per team
-   */
-  public getProductCompetition(product: any, teamname: string, type: string) {
+  public getProductCompetition(product: any, type: string, print:boolean=true) {
     //console.log(competition);
 
     product.info = this.setInfo(product);
@@ -103,27 +110,30 @@ export class MarketplacetHandler {
 
     let teams = this.sortOutput(res[0], type, product);
     //console.log(JSON.stringify(res));
-    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
-    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_team_overview.json`, JSON.stringify(teams), function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
-    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_info.json`, JSON.stringify(product), function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
     let final=this.createOutput(product,teams,res[1]);
-    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_finalcompetition.md`, final, function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
+    if(print){
+      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
+        if (err) {
+          console.log(err);
+        }
+      });
+      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_team_overview.json`, JSON.stringify(teams), function (err: any) {
+        if (err) {
+          console.log(err);
+        }
+      });
+      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_info.json`, JSON.stringify(product), function (err: any) {
+        if (err) {
+          console.log(err);
+        }
+      });
+      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_finalcompetition.md`, final, function (err: any) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+    return [teams,res[1]];
     //console.log(competition);
   }
 
@@ -141,9 +151,10 @@ export class MarketplacetHandler {
     while (true) {
       if (arr[i] == undefined) break;
       arr[i].info = this.setInfo(arr[i]);
+      //TODOD if subgenre then no tag needed
       if (arr[i].DisplayProperties.creatorName != filter.DisplayProperties.creatorName && arr[i].info.genre == filter.info.genre && (filter.info.subgenre == "" || arr[i].info.subgenre == filter.info.subgenre)) {
         tagMatches = this.getTagmatches(filter.info.tags, arr[i].info.tags);
-        if (tagMatches.length >= 1) {
+        if (tagMatches.length >= 1 || filter.info.subgenre!="") {
           for (let index = 0; index < tagMatches.length; index++) {
             (tagStats as any)[tagMatches[index]]++;
           }
@@ -156,7 +167,7 @@ export class MarketplacetHandler {
       //if ((arr as any)[type].content[i] == undefined) break;
     }
     //sort by tag(tagquantity),
-    console.log(`filter products from ${i} to ${count} products`);
+    console.log(`filter for ${filter.Title.neutral} products from ${i} to ${count} products`);
     //console.log(tagStats);
     return [res,tagStats];
   }
@@ -305,6 +316,4 @@ export class MarketplacetHandler {
      */
     return coins * this.conversion;
   }
-
-  //public getTeamCompetition();
 }
