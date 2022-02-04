@@ -91,14 +91,49 @@ export class MarketplacetHandler {
       (comps as any)[team[i].Title.neutral] = this.getProductCompetition(team[i],type,false);
     }
     /**
-     * merge
-     * 
+     * merge teams, products
+     * merge stats
      */
+    let mergeStats = {};
+    let mergeTeams = {};
+    for(var prod in comps){
+      console.log(`prod: ${prod}, (comps as any)[prod] ${JSON.stringify((comps as any)[prod][1])}`);
+      //this.mergeTeams(mergeTeams,(comps as any)[prod][0]);
+      this.mergeStats(mergeStats,(comps as any)[prod][1]);
+      console.log(mergeStats);
+    }   
+
     fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.json`, JSON.stringify(comps), function (err: any) {
       if (err) {
         console.log(err);
       }
     });
+  }
+
+  private mergeStats(stats1:any,stats2:any){
+    if(stats1!={}){
+      let found:boolean=false;
+      for(var elem1 in stats2){
+        found=false;
+        //check for stats in stats1
+        for(var elem2 in stats1){
+          if(elem1 == elem2){
+            console.log(`match ${elem2} = ${stats1[elem2]} + ${stats2[elem2]}`);
+            stats1[elem2]+=stats2[elem2];
+            found=true;
+            break;
+          }
+        }
+        if(!found)
+          stats1[elem1]=stats2[elem1];
+      }
+    }else{
+      for(var elem in stats1){
+        stats1[elem]=stats2[elem];
+      }
+    }
+      
+      return stats1;
   }
 
   public getProductCompetition(product: any, type: string, print:boolean=true) {
