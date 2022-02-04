@@ -102,7 +102,7 @@ export class MarketplacetHandler {
     //console.log(product);
     let res = this.filterSimilarity(this.object[type].content, type, product);
 
-    let teams = this.sortOutput(res, type, product);
+    let teams = this.sortOutput(res[0], type, product);
     //console.log(JSON.stringify(res));
     fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
       if (err) {
@@ -119,7 +119,12 @@ export class MarketplacetHandler {
         console.log(err);
       }
     });
-    this.createOutput(product,teams);
+    let final=this.createOutput(product,teams,res[1]);
+    fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_finalcompetition.md`, final, function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
     //console.log(competition);
   }
 
@@ -133,7 +138,7 @@ export class MarketplacetHandler {
       console.log(filter.info.tags[index]);
       (tagStats as any)[filter.info.tags[index]] = 0;
     }
-    console.log(tagStats);
+    //console.log(tagStats);
     while (true) {
       if (arr[i] == undefined) break;
       arr[i].info = this.setInfo(arr[i]);
@@ -154,7 +159,7 @@ export class MarketplacetHandler {
     //sort by tag(tagquantity),
     console.log(`filter products from ${i} to ${count} products`);
     console.log(tagStats);
-    return res;
+    return [res,tagStats];
   }
   
   private sortOutput(arr: any, type: string, filter: any) {
@@ -190,13 +195,15 @@ export class MarketplacetHandler {
     }
     return matches;
   }
-  private createOutput(product:any,teams:object[]) { 
+  private createOutput(product:any,teams:object[],tagstats:any) { 
     let text=
-    `# Competition based on ${product.Title.neutral}\n# `+ this.product_overview(product);
+    `# Competition based on Product ${product.Title.neutral}\n# `+ this.product_overview(product);
+    text+=`\n${JSON.stringify(tagstats)}\n\n`
     for (let i = 0; i < teams.length; i++) {
       text+=`\n\n\n\n${this.team_overview(teams[i])}`;
       
     }
+    return text;
     //TODO competion output
     // TODO module for team outpur and product info
     
@@ -214,7 +221,8 @@ export class MarketplacetHandler {
     `Genre: ${product.info.genre}\n\n`+
     `${product.info.subgenre!=""?`Subenre: ${product.info.subgenre}\n\n`:""}`+
     `Tags: ${product.info.tags}\n\n`+
-    `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)`;
+    `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)\n\n`+
+    `Popularity: ${product.info.popularity}\n`;
   }
 
   private team_overview(team:any){
@@ -235,9 +243,11 @@ export class MarketplacetHandler {
         //console.log(team.products[i].info.tags);
     }
     //TODO sort matchedTags
+    //TODO sort products by popularity
     let top = "";
     for(let i=0;i<(3&&team.products.length);i++){
       //console.log(team.products[i]);
+      //TODO sort by popularity
       top+= `### ${this.product_overview(team.products[i])}\n`;
     }
     return `## ${team.creatorName}\n\n`+`popularity: ${popularity}\n\n`+`${JSON.stringify(matchedTags)+ top}`;
