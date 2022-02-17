@@ -85,58 +85,110 @@ export class MarketplacetHandler {
     console.log(`end search for ${name}`);
     return info;
   }
-  public getTeamCompetition(team:any,type:string){
+  public getTeamCompetition(team: any, type: string) {
     let comps = {};
-    for(let i=0;i<team.length;i++){
-      (comps as any)[team[i].Title.neutral] = this.getProductCompetition(team[i],type,false);
+    for (let i = 0; i < team.length; i++) {
+      (comps as any)[team[i].Title.neutral] = this.getProductCompetition(team[i], type, false);
     }
     /**
      * merge teams, products
      * merge stats
      */
     let mergeStats = {};
-    let mergeTeams = {};
-    for(var prod in comps){
-      console.log(`prod: ${prod}, (comps as any)[prod] ${JSON.stringify((comps as any)[prod][1])}`);
-      //this.mergeTeams(mergeTeams,(comps as any)[prod][0]);
-      this.mergeStats(mergeStats,(comps as any)[prod][1]);
-      console.log(mergeStats);
-    }   
+    let mergeTeams = null;
+    for (var prod in comps) {
+      //console.log(`prod: ${prod}, (comps as any)[prod] ${JSON.stringify((comps as any)[prod][1])}`);
+      mergeTeams = this.mergeTeams(mergeTeams, (comps as any)[prod][0]);
+      this.mergeStats(mergeStats, (comps as any)[prod][1]);
+    }
+    //console.log(mergeStats);
+    //console.log(mergeTeams);
 
     fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.json`, JSON.stringify(comps), function (err: any) {
       if (err) {
         console.log(err);
       }
     });
+    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_mergeTeams.json`, JSON.stringify(mergeTeams), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
+    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_mergeStats.json`, JSON.stringify(mergeStats), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 
-  private mergeStats(stats1:any,stats2:any){
-    if(stats1!={}){
-      let found:boolean=false;
-      for(var elem1 in stats2){
-        found=false;
-        //check for stats in stats1
-        for(var elem2 in stats1){
-          if(elem1 == elem2){
-            console.log(`match ${elem2} = ${stats1[elem2]} + ${stats2[elem2]}`);
-            stats1[elem2]+=stats2[elem2];
-            found=true;
+  private mergeTeams(team1: any, team2: any) {
+    if (team1 != null) {
+      for (let i = 0; i < team2.length; i++) {
+        console.log(team2[i].creatorName);
+        //get pos in team1
+        let pos1;
+        for (pos1 = 0; pos1 < team1.length; pos1++) {
+          if (team1[pos1].creatorName == team2[i].creatorName) {
+            console.log(`  found ${team1[pos1].creatorName} at ${pos1} ${team2[i].creatorName}`);
             break;
           }
         }
-        if(!found)
-          stats1[elem1]=stats2[elem1];
+        if (pos1 == team1.length) {
+          console.log("  nothing found here");
+          team1.push(team2[i]);
+          console.log(team1[pos1]);
+        } else {
+          // check for doubles
+          for (let j = 0; j < team2[i].products.length; j++) {
+            let found = false;
+            for (let k = 0; k < team1[pos1].products.length; k++) {
+              if (team1[pos1].products[k].Title.neutral == team2[i].products[j].Title.neutral) {
+                console.log(`   found ${team1[pos1].products[k].Title.neutral}`);
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              team1[pos1].products.push(team2[i].products[j]);
+              team1[pos1].count++;
+              console.log(`   added ${team2[i].products[j].Title.neutral}`);
+            }
+          }
+        }
       }
-    }else{
-      for(var elem in stats1){
-        stats1[elem]=stats2[elem];
-      }
+    } else {
+      team1 = team2;
     }
-      
-      return stats1;
+
+    return team1;
   }
 
-  public getProductCompetition(product: any, type: string, print:boolean=true) {
+  private mergeStats(stats1: any, stats2: any) {
+    if (stats1 != {}) {
+      let found: boolean = false;
+      for (var elem1 in stats2) {
+        found = false;
+        //check for stats in stats1
+        for (var elem2 in stats1) {
+          if (elem1 == elem2) {
+            console.log(`match ${elem2} = ${stats1[elem2]} + ${stats2[elem2]}`);
+            stats1[elem2] += stats2[elem2];
+            found = true;
+            break;
+          }
+        }
+        if (!found) stats1[elem1] = stats2[elem1];
+      }
+    } else {
+      for (var elem in stats1) {
+        stats1[elem] = stats2[elem];
+      }
+    }
+
+    return stats1;
+  }
+
+  public getProductCompetition(product: any, type: string, print: boolean = true) {
     //console.log(competition);
 
     product.info = this.setInfo(product);
@@ -145,8 +197,8 @@ export class MarketplacetHandler {
 
     let teams = this.sortOutput(res[0], type, product);
     //console.log(JSON.stringify(res));
-    let final=this.createOutput(product,teams,res[1]);
-    if(print){
+    let final = this.createOutput(product, teams, res[1]);
+    if (print) {
       fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
         if (err) {
           console.log(err);
@@ -168,7 +220,7 @@ export class MarketplacetHandler {
         }
       });
     }
-    return [teams,res[1]];
+    return [teams, res[1]];
     //console.log(competition);
   }
 
@@ -189,7 +241,7 @@ export class MarketplacetHandler {
       //TODOD if subgenre then no tag needed
       if (arr[i].DisplayProperties.creatorName != filter.DisplayProperties.creatorName && arr[i].info.genre == filter.info.genre && (filter.info.subgenre == "" || arr[i].info.subgenre == filter.info.subgenre)) {
         tagMatches = this.getTagmatches(filter.info.tags, arr[i].info.tags);
-        if (tagMatches.length >= 1 || filter.info.subgenre!="") {
+        if (tagMatches.length >= 1 || filter.info.subgenre != "") {
           for (let index = 0; index < tagMatches.length; index++) {
             (tagStats as any)[tagMatches[index]]++;
           }
@@ -204,27 +256,27 @@ export class MarketplacetHandler {
     //sort by tag(tagquantity),
     console.log(`filter for ${filter.Title.neutral} products from ${i} to ${count} products`);
     //console.log(tagStats);
-    return [res,tagStats];
+    return [res, tagStats];
   }
-  
+
   private sortOutput(arr: any, type: string, filter: any) {
-    let teams={};
-    let res=[];
-    let highest=""
-    let match=-1;
+    let teams = {};
+    let res = [];
+    let highest = "";
+    let match = -1;
     for (let index = 0; index < arr.length; index++) {
       //console.log(arr[index].DisplayProperties.creatorName);
-      if((teams as any)[arr[index].DisplayProperties.creatorName]==undefined){
-        (teams as any)[arr[index].DisplayProperties.creatorName]={count:0,products:[]}
+      if ((teams as any)[arr[index].DisplayProperties.creatorName] == undefined) {
+        (teams as any)[arr[index].DisplayProperties.creatorName] = { count: 0, products: [] };
       }
       (teams as any)[arr[index].DisplayProperties.creatorName].count++;
       (teams as any)[arr[index].DisplayProperties.creatorName]["products"].push(arr[index]);
       //console.log((teams as any)[arr[index].DisplayProperties.creatorName]);
     }
-    for(var propt in teams){
-      let obj = {creatorName:propt,count: (teams as any)[propt].count,products:(teams as any)[propt].products};
+    for (var propt in teams) {
+      let obj = { creatorName: propt, count: (teams as any)[propt].count, products: (teams as any)[propt].products };
       res.push(obj);
-       //console.log(`${propt}: ${(teams as any)[propt].count}`);
+      //console.log(`${propt}: ${(teams as any)[propt].count}`);
     }
     return res.sort((a, b) => 0 - ((a as any).count > (b as any).count ? 1 : -1));
   }
@@ -240,18 +292,16 @@ export class MarketplacetHandler {
     }
     return matches;
   }
-  private createOutput(product:any,teams:object[],tagstats:any) { 
-    let text=
-    `# Competition based on Product ${product.Title.neutral}\n# `+ this.product_overview(product);
-    text+=`\n${JSON.stringify(tagstats)}\n\n`
+  private createOutput(product: any, teams: object[], tagstats: any) {
+    let text = `# Competition based on Product ${product.Title.neutral}\n# ` + this.product_overview(product);
+    text += `\n${JSON.stringify(tagstats)}\n\n`;
     for (let i = 0; i < teams.length; i++) {
-      text+=`\n\n\n\n${this.team_overview(teams[i])}`;
-      
+      text += `\n\n\n\n${this.team_overview(teams[i])}`;
     }
     return text;
     //TODO competion output
     // TODO module for team outpur and product info
-    
+
     fs.writeFileSync(`${product.Title.neutral.split(" ").join("_")}_competition.md`, text, function (err: any) {
       if (err) {
         console.log(err);
@@ -259,43 +309,46 @@ export class MarketplacetHandler {
     });
   }
 
-  private product_overview(product:any){
-    return `${product.Title.neutral}\n\n`+`![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n`+
-    `AverageRating: ${product.AverageRating}\n\n`+
-    `TotalRatingsCount: ${product.TotalRatingsCount}\n\n`+
-    `Genre: ${product.info.genre}\n\n`+
-    `${product.info.subgenre!=""?`Subenre: ${product.info.subgenre}\n\n`:""}`+
-    `Tags: ${product.info.tags}\n\n`+
-    `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)\n\n`+
-    `Popularity: ${product.info.popularity}\n`;
+  private product_overview(product: any) {
+    return (
+      `${product.Title.neutral}\n\n` +
+      `![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n` +
+      `AverageRating: ${product.AverageRating}\n\n` +
+      `TotalRatingsCount: ${product.TotalRatingsCount}\n\n` +
+      `Genre: ${product.info.genre}\n\n` +
+      `${product.info.subgenre != "" ? `Subenre: ${product.info.subgenre}\n\n` : ""}` +
+      `Tags: ${product.info.tags}\n\n` +
+      `Price: ${product.DisplayProperties.price} minecoins (~${Number(product.info.priceEUR.toFixed(2))} EUR)\n\n` +
+      `Popularity: ${product.info.popularity}\n`
+    );
   }
 
-  private team_overview(team:any){
+  private team_overview(team: any) {
     /**
      * matched tags, popularity, top tags of that team, top 3 products
      * TODO get team image
      */
-    let matchedTags ={}
-    let popularity =0;
-    for(let i=0;i<team.products.length; i++){
-      for(let j=0;j<team.products[i].info.tags.length;j++){
-        if((matchedTags as any)[team.products[i].info.tags[j]]==undefined){
-          (matchedTags as any)[team.products[i].info.tags[j]]=0;
+    let matchedTags = {};
+    let popularity = 0;
+    for (let i = 0; i < team.products.length; i++) {
+      for (let j = 0; j < team.products[i].info.tags.length; j++) {
+        if ((matchedTags as any)[team.products[i].info.tags[j]] == undefined) {
+          (matchedTags as any)[team.products[i].info.tags[j]] = 0;
         }
         (matchedTags as any)[team.products[i].info.tags[j]]++;
       }
-      popularity+=team.products[i].info.popularity;
-        //console.log(team.products[i].info.tags);
+      popularity += team.products[i].info.popularity;
+      //console.log(team.products[i].info.tags);
     }
     //TODO sort matchedTags
     //TODO sort products by popularity
     let top = "";
-    for(let i=0;i<(3&&team.products.length);i++){
+    for (let i = 0; i < (3 && team.products.length); i++) {
       //console.log(team.products[i]);
       //TODO sort by popularity
-      top+= `### ${this.product_overview(team.products[i])}\n`;
+      top += `### ${this.product_overview(team.products[i])}\n`;
     }
-    return `## ${team.creatorName}\n\n`+`popularity: ${popularity}\n\n`+`${JSON.stringify(matchedTags)+ top}`;
+    return `## ${team.creatorName}\n\n` + `popularity: ${popularity}\n\n` + `${JSON.stringify(matchedTags) + top}`;
   }
 
   private setInfo(product: any) {
@@ -313,7 +366,7 @@ export class MarketplacetHandler {
     let tags = [];
     let bools = [];
     let P = 0;
-    let income = Number(((product.TotalRatingsCount) * product.DisplayProperties.price).toFixed());
+    let income = Number((product.TotalRatingsCount * product.DisplayProperties.price).toFixed());
     for (let i = 0; i < info.length; i++) {
       if (info[i].startsWith("genre.", 0)) {
         genre = info[i].slice(6);
@@ -327,10 +380,19 @@ export class MarketplacetHandler {
         bools.push(info[i]);
       }
     }
-    return { tags: tags, genre: genre, subgenre: subgenre, bools: bools, P: P, popularity: Number((product.TotalRatingsCount * product.AverageRating).toFixed()), income: income, priceEUR:this.priceConversion(product.DisplayProperties.price)};
+    return {
+      tags: tags,
+      genre: genre,
+      subgenre: subgenre,
+      bools: bools,
+      P: P,
+      popularity: Number((product.TotalRatingsCount * product.AverageRating).toFixed()),
+      income: income,
+      priceEUR: this.priceConversion(product.DisplayProperties.price),
+    };
   }
-  
-  private priceConversion(coins:number){
+
+  private priceConversion(coins: number) {
     /*
     320 coins - 1.99
       1 coins - 0,00621875
