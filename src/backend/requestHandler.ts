@@ -1,4 +1,3 @@
-import { MarketplaceData } from "./marketplaceProduct";
 import fetch from "node-fetch";
 const fs = require("fs");
 

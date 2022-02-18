@@ -39,7 +39,6 @@ export class MarketplacetHandler {
       i++;
     }
     console.log(`[END] found ${i} ${Producttype}`);
-    //TODO test if 'writeFileSync' is necessary
     fs.writeFile(`${this.inpath}Catalog.json`, JSON.stringify(this.object), function (err: any) {
       if (err) {
         console.log(err);
@@ -49,40 +48,39 @@ export class MarketplacetHandler {
 
   public async loadAll(): Promise<object> {
     this.object = JSON.parse(fs.readFileSync(`${this.inpath}Catalog.json`, "utf8"));
-    console.log(`loaded Catalog from file`);
+    console.log(`  loaded Catalog from file\n`);
     return this.object;
   }
 
   public getProduct(name: string, type: string) {
     let i = 0;
-    console.log(`search for ${name}`);
+    console.log(`  [PRODUCT]: search for ${name}`);
     while (true) {
       // count product
       if ((this.object as any)[type].content[i] == undefined) break;
       if ((this.object as any)[type].content[i].Title.neutral.toLowerCase() == name.toLowerCase()) {
-        console.log((this.object as any)[type].content[i].Title);
+        console.log(`  [PRODUCT]: search for ${name} ended`);
         return (this.object as any)[type].content[i];
       }
       i++;
     }
-    console.log(`end search for ${name}`);
+    console.log(`  [PRODUCT]: search for ${name} failed`);
     return {};
   }
 
   public getTeam(name: string, type: string) {
     let info = [];
     let i = 0;
-    console.log(`search for ${name}`);
+    console.log(`  [TEAM]: search for ${name}`);
     while (true) {
       // count product
       if ((this.object as any)[type].content[i] == undefined) break;
       if ((this.object as any)[type].content[i].DisplayProperties.creatorName.toLowerCase() == name.toLowerCase()) {
         info.push((this.object as any)[type].content[i]);
-        console.log((this.object as any)[type].content[i].Title);
       }
       i++;
     }
-    console.log(`end search for ${name}`);
+    console.log(`  [TEAM]: search for ${name} ended`);
     return info;
   }
   public getTeamCompetition(team: any, type: string) {
@@ -90,19 +88,14 @@ export class MarketplacetHandler {
     for (let i = 0; i < team.length; i++) {
       (comps as any)[team[i].Title.neutral] = this.getProductCompetition(team[i], type, false);
     }
-    //console.log(Tags);
-    //start evaluation
     let mergeStats = {};
     let mergeTeams = null;
     for (var prod in comps) {
-      //console.log(`prod: ${prod}, (comps as any)[prod] ${JSON.stringify((comps as any)[prod][1])}`);
       mergeTeams = this.mergeTeams(mergeTeams, (comps as any)[prod][0]);
       this.mergeStats(mergeStats, (comps as any)[prod][1]);
     }
 
     let final = this.createOutputTeam(team, mergeTeams, mergeStats);
-    //console.log(mergeStats);
-    //console.log(mergeTeams);
 
     fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.json`, JSON.stringify(comps), function (err: any) {
       if (err) {
@@ -177,7 +170,6 @@ export class MarketplacetHandler {
         //check for stats in stats1
         for (var elem2 in stats1) {
           if (elem1 == elem2) {
-            console.log(`match ${elem2} = ${stats1[elem2]} + ${stats2[elem2]}`);
             stats1[elem2] += stats2[elem2];
             found = true;
             break;
@@ -195,14 +187,10 @@ export class MarketplacetHandler {
   }
 
   public getProductCompetition(product: any, type: string, print: boolean = true) {
-    //console.log(competition);
-
     product.info = this.setInfo(product);
-    //console.log(product);
     let res = this.filterSimilarity(this.object[type].content, type, product);
 
     let teams = this.sortOutputProduct(res[0], type, product);
-    //console.log(JSON.stringify(res));
     let final = this.createOutputProduct(product, teams, res[1]);
     if (print) {
       fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
@@ -227,7 +215,6 @@ export class MarketplacetHandler {
       });
     }
     return [teams, res[1]];
-    //console.log(competition);
   }
 
   private filterSimilarity(arr: any, type: string, filter: any) {
@@ -237,10 +224,8 @@ export class MarketplacetHandler {
     let tagMatches = [];
     let tagStats = {};
     for (let index = 0; index < filter.info.tags.length; index++) {
-      //console.log(filter.info.tags[index]);
       (tagStats as any)[filter.info.tags[index]] = 0;
     }
-    //console.log(tagStats);
     while (true) {
       if (arr[i] == undefined) break;
       arr[i].info = this.setInfo(arr[i]);
@@ -250,20 +235,13 @@ export class MarketplacetHandler {
           for (let index = 0; index < tagMatches.length; index++) {
             (tagStats as any)[tagMatches[index]]++;
           }
-          //arr[i].info.matches = tagMatches;
-
-          //console.log(`${arr[i].Title.neutral}: ${arr[i].info.matches}`);
           res.push(arr[i]);
           count++;
-          //console.log(`found ${arr[i].Title.neutral}-${arr[i].DisplayProperties.creatorName} ${count} ${tagMatches.length} ${tagMatches}`);
         }
       }
       i++;
-      //if ((arr as any)[type].content[i] == undefined) break;
     }
-    //sort by tag(tagquantity),
-    console.log(`filter for ${filter.Title.neutral} products from ${i} to ${count} products`);
-    //console.log(tagStats);
+    console.log(`[UAUTU] filter for ${filter.Title.neutral} from ${i} products to ${count} products`);
     return [res, tagStats];
   }
 
@@ -273,18 +251,15 @@ export class MarketplacetHandler {
     let highest = "";
     let match = -1;
     for (let index = 0; index < arr.length; index++) {
-      //console.log(arr[index].DisplayProperties.creatorName);
       if ((teams as any)[arr[index].DisplayProperties.creatorName] == undefined) {
         (teams as any)[arr[index].DisplayProperties.creatorName] = { count: 0, products: [] };
       }
       (teams as any)[arr[index].DisplayProperties.creatorName].count++;
       (teams as any)[arr[index].DisplayProperties.creatorName]["products"].push(arr[index]);
-      //console.log((teams as any)[arr[index].DisplayProperties.creatorName]);
     }
     for (var propt in teams) {
       let obj = { creatorName: propt, count: (teams as any)[propt].count, products: (teams as any)[propt].products };
       res.push(obj);
-      //console.log(`${propt}: ${(teams as any)[propt].count}`);
     }
     return res.sort((a, b) => 0 - ((a as any).count > (b as any).count ? 1 : -1));
   }
@@ -333,14 +308,9 @@ export class MarketplacetHandler {
         (matchedTags as any)[team.products[i].info.tags[j]]++;
       }
       popularity += team.products[i].info.popularity;
-      //console.log(team.products[i].info.tags);
     }
-    //TODO sort matchedTags
-    //TODO sort products by popularity
     let top = "<details open>\n<summary></summary>";
     for (let i = 0; i < (3 && team.products.length); i++) {
-      //console.log(team.products[i]);
-      //TODO sort by popularity
       top += `\n\n<details>\n<summary>${team.products[i].Title.neutral}</summary>\n<br>\n${this.product_overview(team.products[i])}\n</details>\n\n`;
     }
     return `## **${team.creatorName}**\n\n` + `popularity: ${popularity}\n\n` + `${JSON.stringify(matchedTags)}\n\n ${top}</details>`;
@@ -390,6 +360,7 @@ export class MarketplacetHandler {
 
   private priceConversion(coins: number) {
     /*
+    Conversion from minecoins to euros
     320 coins - 1.99
       1 coins - 0,00621875
     1020 coins - 5.99
