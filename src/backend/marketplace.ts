@@ -261,6 +261,7 @@ export class MarketplacetHandler {
   private product_overview(product: any) {
     return (
       `\n\n![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n\n` +
+      `\`\`\`\n${product.Description.neutral}\n\`\`\`\n\n` +
       `AverageRating: ${product.AverageRating}\n\n` +
       `TotalRatingsCount: ${product.TotalRatingsCount}\n\n` +
       `Genre: ${product.info.genre}\n\n` +
