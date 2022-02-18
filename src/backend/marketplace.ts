@@ -287,7 +287,8 @@ export class MarketplacetHandler {
     for (let i = 0; i < (3 && team.products.length); i++) {
       top += `\n\n<details>\n<summary>${team.products[i].Title.neutral}</summary>\n<br>\n${this.product_overview(team.products[i])}\n</details>\n\n`;
     }
-    return `## **${team.creatorName}**\n\n` + `popularity: ${popularity}\n\n` + `${JSON.stringify(matchedTags)}\n\n ${top}</details>`;
+    return `## **${team.creatorName}**\n\n` + `popularity: ${popularity}\n\n` + `${top}</details>`;
+    //return `## **${team.creatorName}**\n\n` + `popularity: ${popularity}\n\n` + `${JSON.stringify(matchedTags)}\n\n ${top}</details>`;
   }
 
   private setInfo(product: any) {
