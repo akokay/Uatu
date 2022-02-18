@@ -6,6 +6,7 @@ let newFetch: boolean = false;
 
 export async function Startup(): Promise<void> {
   console.log(`[FETCH] Catalog`);
+  const start = new Date().getTime();
   let marketplacetHandler = new MarketplacetHandler();
   if (newFetch) {
     await marketplacetHandler.fetchAll();
@@ -15,6 +16,7 @@ export async function Startup(): Promise<void> {
   console.log(`[UATU] Begin search for Competition`);
   Testcases(marketplacetHandler);
 
+  console.log(`[UATU] Uatu terminated in ${new Date().getTime() - start}ms`);
   process.exit();
 }
 
@@ -41,7 +43,7 @@ function Testcases(marketplacetHandler: MarketplacetHandler) {
   //#2
   pos = -1;
   teamname = "Spark Universe";
-  console.log(`[Testcase#2] ${teamname}\n`);
+  console.log(`\n\n[Testcase#2] ${teamname}\n`);
   team = marketplacetHandler.getTeam(teamname, worldtemplate);
   for (let i = 0; i < team.length; i++) {
     if (team[i].Title.neutral == "Furniture") {
@@ -59,7 +61,7 @@ function Testcases(marketplacetHandler: MarketplacetHandler) {
   //#3
   pos = -1;
   teamname = "Pathway Studios";
-  console.log(`[Testcase#3] ${teamname}\n`);
+  console.log(`\n\n[Testcase#3] ${teamname}\n`);
   team = marketplacetHandler.getTeam(teamname, worldtemplate);
   for (let i = 0; i < team.length; i++) {
     if (team[i].Title.neutral == "Tiki Paradise") {
@@ -77,7 +79,7 @@ function Testcases(marketplacetHandler: MarketplacetHandler) {
   //#4
   pos = -1;
   teamname = "Pixelbiester";
-  console.log(`[Testcase#4] ${teamname}\n`);
+  console.log(`\n\n[Testcase#4] ${teamname}\n`);
   team = marketplacetHandler.getTeam(teamname, worldtemplate);
   for (let i = 0; i < team.length; i++) {
     if (team[i].Title.neutral == "Wizard World") {
@@ -95,7 +97,7 @@ function Testcases(marketplacetHandler: MarketplacetHandler) {
   //#5
   pos = -1;
   teamname = "Norvale";
-  console.log(`[Testcase#5] ${teamname}\n`);
+  console.log(`\n\n[Testcase#5] ${teamname}\n`);
   team = marketplacetHandler.getTeam(teamname, worldtemplate);
   for (let i = 0; i < team.length; i++) {
     if (team[i].Title.neutral == "Pirate Adventures") {
