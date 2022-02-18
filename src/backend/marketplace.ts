@@ -99,11 +99,17 @@ export class MarketplacetHandler {
       mergeTeams = this.mergeTeams(mergeTeams, (comps as any)[prod][0]);
       this.mergeStats(mergeStats, (comps as any)[prod][1]);
     }
-    mergeTeams = this.sortOutputTeam(mergeTeams, Tags);
+
+    let final = this.createOutputTeam(team, mergeTeams, mergeStats);
     //console.log(mergeStats);
     //console.log(mergeTeams);
 
     fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.json`, JSON.stringify(comps), function (err: any) {
+      if (err) {
+        console.log(err);
+      }
+    });
+    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_finalcompetition.md`, final, function (err: any) {
       if (err) {
         console.log(err);
       }
@@ -113,22 +119,17 @@ export class MarketplacetHandler {
         console.log(err);
       }
     });
-    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_mergeStats.json`, JSON.stringify(comps), function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
   }
 
-  private sortOutputTeam(teams: any, team: any) {
+  private createOutputTeam(team: any, teams: any, tagstats: any) {
+    let text = `# Competition based on Team ${team[0].DisplayProperties.creatorName}\n`;
+    text += `\n${JSON.stringify(tagstats)}<br><br>\n`;
+    text += this.team_overview({ creatorName: team[0].DisplayProperties.creatorName, count: -1, products: team });
+    text += `<br><br>\n\n`;
     for (let i = 0; i < teams.length; i++) {
-      //console.log(`\tteam: ${teams[i].creatorName}`);
-      //this.getTagmatches(teams[i].products[j].info.tags);
-      for (let j = 0; j < teams[i].products.length; j++) {
-        //console.log(`\t\t${teams[i].products[j].Title.neutral}`);
-      }
+      text += `${this.team_overview(teams[i])}<br><br>\n\n`;
     }
-    return teams;
+    return text;
   }
 
   private mergeTeams(team1: any[] | null, team2: any[]) {
@@ -310,8 +311,7 @@ export class MarketplacetHandler {
 
   private product_overview(product: any) {
     return (
-      `${product.Title.neutral}\n\n` +
-      `![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n` +
+      `\n\n![Alt text](${product.Images[0].url} \"${product.Images[0].Type}\")\n\n` +
       `AverageRating: ${product.AverageRating}\n\n` +
       `TotalRatingsCount: ${product.TotalRatingsCount}\n\n` +
       `Genre: ${product.info.genre}\n\n` +
@@ -323,10 +323,6 @@ export class MarketplacetHandler {
   }
 
   private team_overview(team: any) {
-    /**
-     * matched tags, popularity, top tags of that team, top 3 products
-     * TODO get team image
-     */
     let matchedTags = {};
     let popularity = 0;
     for (let i = 0; i < team.products.length; i++) {
@@ -341,13 +337,13 @@ export class MarketplacetHandler {
     }
     //TODO sort matchedTags
     //TODO sort products by popularity
-    let top = "";
+    let top = "<details open>\n<summary></summary>";
     for (let i = 0; i < (3 && team.products.length); i++) {
       //console.log(team.products[i]);
       //TODO sort by popularity
-      top += `### ${this.product_overview(team.products[i])}\n`;
+      top += `\n\n<details>\n<summary>${team.products[i].Title.neutral}</summary>\n<br>\n${this.product_overview(team.products[i])}\n</details>\n\n`;
     }
-    return `## ${team.creatorName}\n\n` + `popularity: ${popularity}\n\n` + `${JSON.stringify(matchedTags) + top}`;
+    return `## **${team.creatorName}**\n\n` + `popularity: ${popularity}\n\n` + `${JSON.stringify(matchedTags)}\n\n ${top}</details>`;
   }
 
   private setInfo(product: any) {
