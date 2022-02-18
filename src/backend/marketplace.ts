@@ -216,7 +216,7 @@ export class MarketplacetHandler {
       }
       i++;
     }
-    console.log(`[UAUTU] filter for ${filter.Title.neutral} from ${i} products to ${count} products`);
+    console.log(`[UATU] filter for ${filter.Title.neutral} from ${i} products to ${count} products`);
     return [res, tagStats];
   }
 
