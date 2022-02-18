@@ -39,7 +39,8 @@ export class MarketplacetHandler {
       i++;
     }
     console.log(`[END] found ${i} ${Producttype}`);
-    fs.writeFile(`${this.inpath}Catalog.json`, JSON.stringify(this.object), function (err: any) {
+
+    fs.writeFileSync(`${this.inpath}Catalog.json`, JSON.stringify(this.object), function (err: any) {
       if (err) {
         console.log(err);
       }
