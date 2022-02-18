@@ -17,7 +17,9 @@ Der Focus dieser Software ist es Produkte aus dem [Minecraft Marketplace](https:
 ### **Pervasive Computing**
 
 Hier möchte ich mich nocheinmal an einer groben Einordnung meiner Software in das Themengebiet des pervasive Computing versuchen.<br>
-![Alt text](https://raw.githubusercontent.com/akokay/Uatu/main/img/modell.png?token=GHSAT0AAAAAABRXADDV2H3WHX2FBST3KV7GYQP4CHQ "modell")<br>
+
+![Alt text](img/modell.png)
+
 Im Kontext des Reiz-Reaktions-Modells erfolgt eine Aufnahme des Katalogs, welches Daten aus dem Physical Environment (die Produkte innerhalb des Katalogs) aufnimmt. Basierend darauf und dem dazukommenten User-Input ermittelt der Algorihtmus die entsprechenden Konkurenten.Am Enden werden die Daten in Form von einer menschenlesbaren Markdown Datei ausgegeben. Sollte ein Team basierend auf den Ergebnissen eine Änderung in Publishing Verhalten entwickeln kann dieses als Rückreaktion von Entscheidung zu Wahrnehmung dargestellt werden. Auch wenn diese Reaktion nicht vom System durchgeführt wird wird deren Ergebniss beim erneuten fetchen im Katalog einsehbar sein. Im Laufe Schritte werden die Katalog Daten (roher Kontext) in Daten, die für das System relevant sind, umgewandelt (normalisierter Kontext). Und die Ausgabe erfolgt in einem Rahmen, der die Konkurenten für Menschen (einigermaßen) übersichtlich darstellt (komplexer Kontext).
 
 ### **Algorithmus**
