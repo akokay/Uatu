@@ -8,6 +8,10 @@ nodejs: 14.17.5
 typescript: 4.4.4
 ```
 
+Command für die Instalation: `npm install -i`
+
+Command zum starten des Programms: `npm start`
+
 # **Dokumentation**
 
 ## **Beschreibung**
