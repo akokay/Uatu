@@ -124,26 +124,21 @@ export class MarketplacetHandler {
   private mergeTeams(team1: any, team2: any) {
     if (team1 != null) {
       for (let i = 0; i < team2.length; i++) {
-        console.log(team2[i].creatorName);
         //get pos in team1
         let pos1;
         for (pos1 = 0; pos1 < team1.length; pos1++) {
           if (team1[pos1].creatorName == team2[i].creatorName) {
-            console.log(`  found ${team1[pos1].creatorName} at ${pos1} ${team2[i].creatorName}`);
             break;
           }
         }
         if (pos1 == team1.length) {
-          console.log("  nothing found here");
           team1.push(team2[i]);
-          console.log(team1[pos1]);
         } else {
           // check for doubles
           for (let j = 0; j < team2[i].products.length; j++) {
             let found = false;
             for (let k = 0; k < team1[pos1].products.length; k++) {
               if (team1[pos1].products[k].Title.neutral == team2[i].products[j].Title.neutral) {
-                console.log(`   found ${team1[pos1].products[k].Title.neutral}`);
                 found = true;
                 break;
               }
@@ -151,7 +146,6 @@ export class MarketplacetHandler {
             if (!found) {
               team1[pos1].products.push(team2[i].products[j]);
               team1[pos1].count++;
-              console.log(`   added ${team2[i].products[j].Title.neutral}`);
             }
           }
         }
