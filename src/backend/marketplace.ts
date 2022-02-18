@@ -96,18 +96,7 @@ export class MarketplacetHandler {
     }
 
     let final = this.createOutputTeam(team, mergeTeams, mergeStats);
-
-    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.json`, JSON.stringify(comps), function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
-    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_finalcompetition.md`, final, function (err: any) {
-      if (err) {
-        console.log(err);
-      }
-    });
-    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_mergeTeams.json`, JSON.stringify(mergeTeams), function (err: any) {
+    fs.writeFileSync(`${this.outpath}${team[0].DisplayProperties.creatorName.split(" ").join("_")}_competition.md`, final, function (err: any) {
       if (err) {
         console.log(err);
       }
@@ -193,22 +182,7 @@ export class MarketplacetHandler {
     let teams = this.sortOutputProduct(res[0], type, product);
     let final = this.createOutputProduct(product, teams, res[1]);
     if (print) {
-      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.json`, JSON.stringify(res), function (err: any) {
-        if (err) {
-          console.log(err);
-        }
-      });
-      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_team_overview.json`, JSON.stringify(teams), function (err: any) {
-        if (err) {
-          console.log(err);
-        }
-      });
-      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_info.json`, JSON.stringify(product), function (err: any) {
-        if (err) {
-          console.log(err);
-        }
-      });
-      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_finalcompetition.md`, final, function (err: any) {
+      fs.writeFileSync(`${this.outpath}${product.Title.neutral.split(" ").join("_")}_competition.md`, final, function (err: any) {
         if (err) {
           console.log(err);
         }
